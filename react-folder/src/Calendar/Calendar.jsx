@@ -1,8 +1,8 @@
-import './App.css'
+import './Calendar.css'
 import { ScheduleXCalendar, useCalendarApp } from '@schedule-x/react'
 import { createViewDay, createViewWeek, createViewMonthGrid} from '@schedule-x/calendar'
 import '@schedule-x/theme-default/dist/calendar.css'
-export default function App() {
+export default function Calendar() {
   const calendar = useCalendarApp({
     views: [
       createViewDay(),
