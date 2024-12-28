@@ -1,0 +1,6 @@
+.modal-container {
+    padding: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    z-index: 0;
+}

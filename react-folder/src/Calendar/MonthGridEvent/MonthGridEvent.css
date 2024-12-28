@@ -1,0 +1,13 @@
+.month-grid-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+
+    padding: 5px;
+}
+
+.empty-shifts {
+    background-color: rgb(255, 196, 196);
+}

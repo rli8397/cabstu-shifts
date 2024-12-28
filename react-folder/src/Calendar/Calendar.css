@@ -1,6 +1,13 @@
 .sx-react-calendar-wrapper {
-    width: 1200px;
-    max-width: 100vw;
-    height: 800px;
-    max-height: 90vh;
-  }
+  width: 100vw;
+  height: 86vh;
+  z-index: 0;
+}
+
+.sx__month-grid-event {
+  height: 6.9vh !important;
+  width: 13vw !important;
+  margin: auto;
+  border-radius: 5px;
+}
+

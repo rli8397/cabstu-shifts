@@ -1,28 +1,22 @@
+import Calendar from './Calendar/Calendar'
+import { BrowserRouter as Router} from 'react-router-dom';
+import {Routes, Route} from 'react-router-dom';
+import { useState, useEffect, useDebugValue } from 'react'
+import Auth from './Auth/Auth'
 import './App.css'
-import { ScheduleXCalendar, useCalendarApp } from '@schedule-x/react'
-import { createViewDay, createViewWeek, createViewMonthGrid} from '@schedule-x/calendar'
-import '@schedule-x/theme-default/dist/calendar.css'
-export default function App() {
-  const calendar = useCalendarApp({
-    views: [
-      createViewDay(),
-      createViewWeek(),
-      createViewMonthGrid()
-    ],
-    events: [
-      {
-        id: 1,
-        title: 'Event 1',
-        start: '2024-12-24 12:00',
-        end: '2024-12-24 14:00'
-      },
-    ],
-    selectedDate: '2024-12-24'
-  })
+
+export default function App(){
+  const [user, setUser] = useState(null)
   return (
-    <>
-      <ScheduleXCalendar calendarApp={calendar}/>
-    </>
+    <div>
+     {user != null ? 
+        <>
+          <h1 className='main-header'>Welcome {user.displayName}</h1>
+          <Calendar/> 
+        </>
+      : 
+        <Auth setUser={(user)=>{setUser(user)}}/>   
+      }
+    </div>
   )
 }
-
