@@ -1,10 +1,10 @@
 import './Popup.css'
 
-export default function Popup({ calendarEvent, closePopup }) {
+export default function Popup({ closePopup, pageContent}) {
     return (
         <div className='popup-div'>
             <div className='popup-content'>
-                <h1>{calendarEvent.title}</h1>
+                {pageContent}
                 <button className='close-btn' onClick={closePopup}>✖</button>
             </div>
         </div>

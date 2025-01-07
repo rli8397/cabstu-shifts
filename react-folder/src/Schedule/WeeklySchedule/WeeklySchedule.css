@@ -1,0 +1,42 @@
+.weekly-content {
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    border-radius: 10px;
+    height: 78vh;
+    padding: 1em;
+    position: relative;
+}
+
+#day-selector {
+    height: 4em;
+    padding: 1em; 
+    border-radius: 10px;
+    border: 1px solid rgba(128, 128, 128, 0.5);
+    outline: none;
+
+}
+
+#day-selector:focus {
+    border: 2px solid rgba(128, 128, 128, 0.5);
+}
+
+.buttons-div {
+    display: flex;
+    position: absolute;
+    right: 1em;
+    top: 1em;
+}
+
+.buttons-div > button {
+    margin-left: 1em;
+    background-color: rgb(235, 233, 233);
+    height: 3em;
+    outline: none;
+}
+
+.shifts-content {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 40vw;
+}
