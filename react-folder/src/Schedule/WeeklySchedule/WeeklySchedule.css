@@ -40,3 +40,35 @@
     transform: translate(-50%, -50%);
     width: 40vw;
 }
+
+.sx__time-grid-event {
+    cursor: grab;
+}
+
+.day-shifts .sx__week-grid__date-number {
+    display:none;
+}
+
+.day-shifts .sx__week-grid__day-name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--sx-font-extra-large);
+    font-weight: 500;
+    color: #fff;
+    height: 2em;
+    width: 4em;
+    border-radius: 10em;
+    background-color: var(--sx-color-primary);
+    margin-top: 2em;
+    margin-bottom:2em;
+}
+
+.day-shifts .sx__calendar-header{
+    display:none;
+}
+
+.day-shifts .sx-react-calendar-wrapper{
+    height: 70vh;
+    width: 100%;
+}

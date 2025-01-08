@@ -4,24 +4,27 @@ import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop';
 import { createResizePlugin } from '@schedule-x/resize';
 import { updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { getDate } from './WeeklySchedule';
 import './WeeklySchedule.css';
 
 export default function DayShifts({ dayInfo, selectedDay }) {
-    if (dayInfo == null || dayInfo.startTime === '' || dayInfo.endTime === '' || dayInfo.startTime == dayInfo.endTime) 
-        return;
-
+    if (dayInfo === null) { return }
+    let startTime = dayInfo.startTime;
+    let endTime = dayInfo.endTime;
+    if (dayInfo.startTime === '' || dayInfo.endTime === '' || dayInfo.startTime == dayInfo.endTime) {
+        startTime = '09:00';
+        endTime = '17:00';
+    }
     const handleShiftChanges = async (e) => {
 
         const docRef = doc(db, "weekly-shifts", selectedDay);
 
         const data = await (await getDoc(docRef)).data();
-        console.log(data)
-        // const updatedShifts = data.shifts.map(shift =>
-        //     shift.id === e.id ? { ...shift, start: e.start, end: e.end } : shift
-        // );
+        const updatedShifts = data.shifts.map(shift =>
+            shift.id === e.id ? { ...shift, start: e.start, end: e.end } : shift
+        );
 
-        // console.log(updateShifts)
-        // await updateDoc(docRef, { shifts: updatedShifts });
+        await updateDoc(docRef, { shifts: updatedShifts });
         
     };
 
@@ -29,26 +32,21 @@ export default function DayShifts({ dayInfo, selectedDay }) {
         views: [ createViewDay() ],
         events: dayInfo.shifts,
         plugins: [
-            createDragAndDropPlugin({
-                onEventDrop: handleShiftChanges,
-                onEventResize: handleShiftChanges,
-            }),
-            createResizePlugin({
-                onEventResize: handleShiftChanges,
-            }),
+            createDragAndDropPlugin(),
+            createResizePlugin(),
         ],
         dayBoundaries: {
-            start: dayInfo.startTime,
-            end: dayInfo.endTime,
+            start: startTime,
+            end: endTime,
         },
-        selectedDate: selectedDay,
+        selectedDate: getDate(selectedDay),
         callbacks: {
             onEventUpdate: handleShiftChanges,
         }
     });
 
     return (
-        <div>
+        <div className='day-shifts'>
             <ScheduleXCalendar calendarApp={calendar} />
         </div>
     );

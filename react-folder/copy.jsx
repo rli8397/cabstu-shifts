@@ -1,10 +1,12 @@
 import './WeeklySchedule.css'
+import React from 'react'
 import { useEffect, useState } from 'react'
 import DayShifts from './DayShifts'
 import Popup from '../../Popup/Popup'
 import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore"
 import { db } from '../../firebase'
 import { sendEmailVerification } from 'firebase/auth'
+import { TimePicker } from '@patternfly/react-core';
 
 export function getDate(day){
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -18,17 +20,40 @@ export default function WeeklySchedule() {
     const [dayInfo, setDayInfo] = useState({startTime: '', endTime: '', shifts: []})
     const [selectedDay, setSelectedDay] = useState('Monday')
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const [startTime, setStartTime] = useState('09:00')
+    const [endTime, setEndTime] = useState('17:00')
     
-    const updateCalendar = async (day) => {
-        setDayInfo(null)
-        setDayInfo(await(await getDoc(doc(db, "weekly-shifts", day))).data())
+    const onStartTimeChange = (time, hour) => {
+        setStartTime(hour)
     }
+
+    const onEndTimeChange = (time, hour) => {
+        setEndTime(hour)
+    }
+
+    const updateCalendar = async (day) => {
+        const data = (await getDoc(doc(db, "weekly-shifts", day))).data();
+        setDayInfo(data);
+    };
 
     useEffect(()=>{
         updateCalendar(selectedDay)
     }, [selectedDay])
 
 
+    useEffect(() => {
+        const updateTimes = async () => {
+            console.log(startTime + " " + endTime) 
+            await updateDoc(doc(db, "weekly-shifts", selectedDay), {
+                startTime: startTime,
+                endTime: endTime,
+            });
+            updateCalendar(selectedDay);
+        };
+
+        updateTimes();
+    }, [startTime, endTime]);
+    
     return (
         <>
             <div className='weekly-content'>
@@ -51,19 +76,15 @@ export default function WeeklySchedule() {
                                         <div className='set-hours-div'>
                                             <div action="submit">
                                                 <label htmlFor="startTime">Start Time</label>
-                                                <input type="text" id='startTime'/>
+                                                <TimePicker time="3:35 AM" onChange={onStartTimeChange} />
                                                 <label htmlFor="endTime">End Time</label>
-                                                <input type="text" id='endTime'/>
+                                                <TimePicker time="3:35 AM" onChange={onEndTimeChange} />
+                                                
                                                 <button onClick={async ()=>{
+                                                    // console.log(startTime)
+                                                    // console.log(endTime)
 
-                                                    const currDay = document.getElementById('day-selector').value
-
-                                                    await updateDoc(doc(db, "weekly-shifts", currDay), {
-                                                        startTime: document.getElementById('startTime').value,
-                                                        endTime: document.getElementById('endTime').value,
-                                                    })
-
-                                                    updateCalendar(currDay)
+                                                    // await updateCalendar(selectedDay)
                                                     setPopup(null)
 
                                                 }}>Submit</button>
@@ -88,22 +109,21 @@ export default function WeeklySchedule() {
                                             <div action="submit">
                                                 <label htmlFor="name">Name</label>
                                                 <input type="text" id='shift-name'/>
-                                                <label htmlFor="startTime">Start Time</label>
+                                                <TimePicker time="3:35 AM" onChange={onStartTimeChange} />
                                                 <input type="text" id='shift-start'/>
-                                                <label htmlFor="endTime">End Time</label>
+                                                <TimePicker time="3:35 AM" onChange={onEndTimeChange} />
                                                 <input type="text" id='shift-end'/>
                                                 <button onClick={async ()=>{
-                                                    const currDay = document.getElementById('day-selector').value
-                                                    await updateDoc(doc(db, "weekly-shifts", currDay), {
+                                                    await updateDoc(doc(db, "weekly-shifts", selectedDay), {
                                                         shifts: arrayUnion({
                                                             id: dayInfo.shifts.length,
                                                             title: document.getElementById('shift-name').value + "'s shift",
-                                                            start: getDate(currDay) + " " + document.getElementById('shift-start').value,
-                                                            end: getDate(currDay) + " " + document.getElementById('shift-end').value,
+                                                            start: startTime,
+                                                            end: startTime,
                                                         })
                                                     })
 
-                                                    updateCalendar(currDay)
+                                                    await updateCalendar(selectedDay)
                                                     setPopup(null)
                                                 }}>Submit</button>
                                             </div>
