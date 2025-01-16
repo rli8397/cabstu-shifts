@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Auth from './Auth/Auth'
 import './App.css'
 import WeeklySchedule from './Schedule/WeeklySchedule/WeeklySchedule'
-
+import TimePicker from './TimePicker/TimePicker'
 export default function App(){
   const [user, setUser] = useState({displayName: 'user'})
   const [choice, setChoice] = useState('Month')

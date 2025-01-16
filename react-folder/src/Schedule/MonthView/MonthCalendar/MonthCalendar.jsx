@@ -14,11 +14,16 @@ import MonthGridEvent from '../MonthGridEvent/MonthGridEvent'
 import Popup from '../../../Popup/Popup'
 import MonthShiftsEdit from '../MonthShiftsEdit/MonthShiftsEdit'
 
+//firebase
+import { doc, getDoc } from 'firebase/firestore'
+import db from '../../../firebase'
+
 // misc
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function MonthCalendar() {
   const [popup, setPopup] = useState(null)
+
   const calendar = useCalendarApp({
     views: [
       createViewMonthGrid(),

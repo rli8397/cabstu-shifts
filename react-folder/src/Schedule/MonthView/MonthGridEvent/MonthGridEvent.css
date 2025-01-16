@@ -9,5 +9,5 @@
 }
 
 .empty-shifts {
-    background-color: rgb(255, 196, 196);
+    background-color: var(--error-color);
 }

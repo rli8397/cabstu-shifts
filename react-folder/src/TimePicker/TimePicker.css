@@ -1,0 +1,54 @@
+.time-picker-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 100%;
+    width: clamp(8em, 10em, 12em);
+    padding: 5px 10px;
+    border: 2px solid var(--grey-outline);
+    border-radius: 5px;
+    flex-wrap: nowrap;
+}
+
+.time-picker-container > input,
+.time-picker-container > select {
+    border: none;
+    border-bottom: 2px solid rgba(128, 128, 128, 0.5);
+    width: 33%;
+    height: 100%;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 0;
+    outline: none;
+    background-color: transparent;
+}
+
+.time-picker-container > select {
+    padding: 1px;
+    appearance: none; 
+    -webkit-appearance: none; 
+    -moz-appearance: none; 
+    background: none;
+    
+}
+
+.time-picker-container > input:focus,
+.time-picker-container > select:focus {
+    border-bottom: 2px solid var(--sx-color-primary);
+}
+
+.error:focus {
+    transition: 0.5s;
+    border-bottom:2px solid var(--error-color) !important;
+}
+
+.error-msg {
+    background-color: var(--error-color);
+    padding: 4px;
+    padding-right: 14px;
+    border-radius: 5px;
+    width: clamp(70px, 275px, 500px);
+}
