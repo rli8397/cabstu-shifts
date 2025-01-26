@@ -1,6 +1,6 @@
 import './Popup.css'
 
-export default function Popup({ closePopup, pageContent}) {
+export default function Popup({ closePopup, pageContent }) {
     return (
         <div className='popup-div'>
             <div className='popup-content'>

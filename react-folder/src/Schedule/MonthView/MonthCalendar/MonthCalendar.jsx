@@ -5,8 +5,8 @@ import './MonthCalendar.css'
 //schedule-x
 import { ScheduleXCalendar, useCalendarApp } from '@schedule-x/react'
 import { createViewMonthGrid } from '@schedule-x/calendar'
-import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop'
 import { createEventModalPlugin } from '@schedule-x/event-modal'
+import { createEventsServicePlugin } from '@schedule-x/events-service'
 
 //components
 import EventModal from '../EventModal/EventModal'
@@ -24,8 +24,36 @@ import { useEffect, useState } from 'react'
 export default function MonthCalendar() {
   const [popup, setPopup] = useState(null)
   const [data, setData] = useState(null)
-  const [events, setEvents] = useState([{id: 10, title: 'test', start: '2025-01-19', end: '2025-01-19'}])
 
+  const calendar = useCalendarApp({
+      views: [
+        createViewMonthGrid(),
+      ],
+      events: [],
+      callbacks: {
+        onDoubleClickEvent(calendarEvent) {
+          
+          if (popup == null) {
+            setPopup(<Popup 
+              closePopup={()=>{setPopup(null)}}
+              pageContent={<MonthShiftsEdit calendarEvent={calendarEvent}/>}
+            />)
+          }
+
+        }
+      }
+    },  
+    [
+      createEventsServicePlugin(),
+      createEventModalPlugin(),
+    ],
+  )
+
+  /* 
+    this useEffect makes a get request to firestore to get the data from the database
+    stores the data in the data state variable as a 2d array, stores a list of the list of shifts
+    the index for the shifts corresponds to its day (i.e. the list of Sunday's shifts are at index 0, Mondays at index 1, etc)
+  */
   useEffect(()=> {
     async function getData() {
       const arr = []
@@ -39,6 +67,8 @@ export default function MonthCalendar() {
     getData()
   }, [])
 
+
+  // this useEffect formats the data into event form, then adds it to the calendar using eventService
   useEffect (()=> {
     if (data){
       // Determine the number of days in the current month
@@ -52,42 +82,18 @@ export default function MonthCalendar() {
         const date = new Date(currentYear, currentMonth, day);
         const eventDate = date.toISOString().slice(0, 10)
         const eventShifts = data[date.getDay()]
-        const event = {
+        calendar.eventsService.add({
           id: day,
           title: 'Click here to see shifts',
           start: eventDate,
           end: eventDate,
           shifts: eventShifts,
-        }
-        eventsArr.push(event)
+        })
       }
-      setEvents(eventsArr)
     }
   }, [data])
 
-  const calendar = useCalendarApp({
-    views: [
-      createViewMonthGrid(),
-    ],
-    events: events,
-    callbacks: {
-      onDoubleClickEvent(calendarEvent) {
-        
-        if (popup == null) {
-          setPopup(<Popup 
-            closePopup={()=>{setPopup(null)}}
-            pageContent={<MonthShiftsEdit/>}
-          />)
-        }
-
-      }
-    }
-  },  
-  [
-    createDragAndDropPlugin(),
-    createEventModalPlugin(),
-  ],
-)
+  
   return (
     <>
       <ScheduleXCalendar 

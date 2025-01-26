@@ -14,6 +14,83 @@ export function getDate(day){
     return '2025-01-' + date
 }
 
+export function ShiftsPopup({ closePopup, updateCalendar }) {
+    const [startTime, setStartTime] = useState('')
+    const [endTime, setEndTime] = useState('')
+    const [shiftName, setShiftName] = useState('No one')
+    return (
+        <Popup
+            closePopup={closePopup}
+            pageContent={
+                <div className='set-hours-div'>
+                    <div action="submit" className='form-content'>
+                        <div className='form-group'>
+                            <label htmlFor="name">Name</label>
+                            <input type="text" id='shift-name' onChange={(e)=>{setShiftName(e.target.value)}}/>
+                        </div>
+
+                        <div className='form-group'>
+                            <label htmlFor="startTime">Start Time</label>
+                            <TimePicker onChange={(time) => {
+                                    setStartTime(time)
+                            }} />
+                        </div>
+
+                        <div className='form-group'>
+                            <label htmlFor="endTime">End Time</label>
+                            <TimePicker onChange={(time) => {
+                                setEndTime(time)
+                            }} />
+                        </div>
+                        
+                        <button onClick={async ()=>{
+                            await updateCalendar(startTime, endTime, shiftName)
+                            closePopup()
+                        }}>Submit</button>
+                    </div>
+                </div>
+            }
+        />
+    )
+}
+
+function SetHoursPopup({ closePopup, updateCalendar }){
+    const [startTime, setStartTime] = useState('09:00')
+    const [endTime, setEndTime] = useState('17:00')
+
+    return (
+        <Popup
+            closePopup={closePopup}
+            pageContent={
+                <div className='set-hours-div'>
+                    <div action="submit" className='form-content'>
+                        <div>
+                            <label htmlFor="startTime">Start Time</label>
+                            <TimePicker onChange={(time) => {
+                                    setStartTime(time)
+                            }} />
+                        </div>
+
+                        <div>
+                            <label htmlFor="endTime">End Time</label>
+                            <TimePicker onChange={(time) => {
+                                setEndTime(time)
+                            }} />
+                        </div>
+                        
+                        <button onClick={async ()=>{    
+                            updateCalendar(startTime, endTime);
+                            closePopup()
+
+                        }}>Submit</button>
+
+                    </div>
+                </div>
+            }
+        />
+    )
+}
+
 export default function WeeklySchedule() {
 
     const [showSetHours, setShowSetHours] = useState(false)
@@ -21,17 +98,34 @@ export default function WeeklySchedule() {
     const [dayInfo, setDayInfo] = useState({startTime: '', endTime: '', shifts: []})
     const [selectedDay, setSelectedDay] = useState('Monday')
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const [startTime, setStartTime] = useState('09:00')
-    const [endTime, setEndTime] = useState('17:00')
 
-    const updateCalendar = async (day) => {
-        setDayInfo(null)
-        setDayInfo(await(await getDoc(doc(db, "weekly-shifts", day))).data())
-
+    const updateShifts = async (startTime, endTime, shiftName) => {
+        await updateDoc(doc(db, "weekly-shifts", selectedDay), {
+            shifts: arrayUnion({
+                id: (dayInfo.shifts.length > 0 ? dayInfo.shifts[dayInfo.shifts.length-1].id + 1: 0),
+                title: shiftName + "'s shift",
+                start: getDate(selectedDay) + " " + startTime,
+                end:  getDate(selectedDay) + " " + endTime,
+            })
+        })
+        refreshCalendar()
     }
 
-    useEffect(()=>{
-        updateCalendar(selectedDay)
+    const updateHours = async (startTime, endTime) => {
+        await updateDoc(doc(db, "weekly-shifts", selectedDay), {
+            startTime: startTime,
+            endTime: endTime,
+        });
+        refreshCalendar()
+    }
+
+    const refreshCalendar = async() => {
+        setDayInfo(null)
+        setDayInfo(await(await getDoc(doc(db, "weekly-shifts", selectedDay))).data())
+    }
+
+    useEffect(()=>{ 
+        refreshCalendar()
     }, [selectedDay])
 
     
@@ -66,7 +160,6 @@ export default function WeeklySchedule() {
                         Add Shifts
                     </button>
                 </div>
-                
 
                 <div className='shifts-content'>
                     <div className='shifts-calendar'>
@@ -77,84 +170,18 @@ export default function WeeklySchedule() {
             </div>
 
             {showSetHours && 
-                <Popup
+                <SetHoursPopup
                     closePopup={()=>{setShowSetHours(false)}}
-                    pageContent={
-                        <div className='set-hours-div'>
-                            <div action="submit" className='form-content'>
-                                <div>
-                                    <label htmlFor="startTime">Start Time</label>
-                                    <TimePicker onChange={(time) => {
-                                            setStartTime(time)
-                                    }} />
-                                </div>
-
-                                <div>
-                                    <label htmlFor="endTime">End Time</label>
-                                    <TimePicker onChange={(time) => {
-                                        setEndTime(time)
-                                    }} />
-                                </div>
-                                
-                                <button onClick={async ()=>{    
-                                    console.log('start time: ' + startTime)
-                                    console.log('end time: ' + endTime)
-                                    await updateDoc(doc(db, "weekly-shifts", selectedDay), {
-                                        startTime: startTime,
-                                        endTime: endTime,
-                                    });
-                                    updateCalendar(selectedDay);
-                                    setShowSetHours(false);
-
-                                }}>Submit</button>
-
-                            </div>
-                        </div>
-                    }
+                    selectedDay={selectedDay}
+                    updateCalendar={updateHours}
                 />
             }
 
-            {showAddShifts && 
-                <Popup
-                    closePopup={()=>{setShowAddShifts(false)}}
-                    pageContent={
-                        <div className='set-hours-div'>
-                            <div action="submit" className='form-content'>
-                                <div className='form-group'>
-                                    <label htmlFor="name">Name</label>
-                                    <input type="text" id='shift-name'/>
-                                </div>
-
-                                <div className='form-group'>
-                                    <label htmlFor="startTime">Start Time</label>
-                                    <TimePicker onChange={(time) => {
-                                            setStartTime(time)
-                                    }} />
-                                </div>
-
-                                <div className='form-group'>
-                                    <label htmlFor="endTime">End Time</label>
-                                    <TimePicker onChange={(time) => {
-                                        setEndTime(time)
-                                    }} />
-                                </div>
-                                
-                                <button onClick={async ()=>{
-                                    await updateDoc(doc(db, "weekly-shifts", selectedDay), {
-                                        shifts: arrayUnion({
-                                            id: dayInfo.shifts[dayInfo.shifts.length-1].id + 1,
-                                            title: document.getElementById('shift-name').value + "'s shift",
-                                            start: getDate(selectedDay) + " " + startTime,
-                                            end:  getDate(selectedDay) + " " + endTime,
-                                        })
-                                    })
-
-                                    await updateCalendar(selectedDay)
-                                    setShowAddShifts(false)
-                                }}>Submit</button>
-                            </div>
-                        </div>
-                    }
+            {showAddShifts &&
+                <ShiftsPopup 
+                    closePopup={()=>{setShowAddShifts(false)}} 
+                    selectedDay={selectedDay}
+                    updateCalendar={updateShifts}
                 />
             }
         </>

@@ -1,6 +1,7 @@
 :root {
   --error-color: rgb(255, 196, 196);
   --grey-outline: rgba(128, 128, 128, 0.5);
+  --green-color: rgb(167, 226, 167);
 }
 #root {
   width: 100vw;

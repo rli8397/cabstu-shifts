@@ -2,24 +2,30 @@ import { ScheduleXCalendar, useCalendarApp } from '@schedule-x/react';
 import { createViewDay } from '@schedule-x/calendar';
 import { createDragAndDropPlugin } from '@schedule-x/drag-and-drop';
 import { createResizePlugin } from '@schedule-x/resize';
-import { updateDoc, doc, getDoc } from 'firebase/firestore';
+import { updateDoc, doc, getDoc, deleteField } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { getDate } from './WeeklySchedule';
 import './WeeklySchedule.css';
+import { useState } from 'react';
+import { ShiftsPopup } from './WeeklySchedule'
+import Popup from '../../Popup/Popup';
+import { createEventsServicePlugin } from '@schedule-x/events-service'
 
 export default function DayShifts({ dayInfo, selectedDay }) {
     if (dayInfo === null) { return }
     let startTime = dayInfo.startTime;
     let endTime = dayInfo.endTime;
-    if (dayInfo.startTime === '' || dayInfo.endTime === '' || dayInfo.startTime == dayInfo.endTime) {
+    const [selectedEvent, setSelectedEvent] = useState(null)
+    const [edit, setEdit] = useState(false)
+    if (startTime === '' || endTime === '' || startTime == endTime) {
         startTime = '09:00';
         endTime = '17:00';
     }
+
     const handleShiftChanges = async (e) => {
-
         const docRef = doc(db, "weekly-shifts", selectedDay);
-
         const data = await (await getDoc(docRef)).data();
+
         const updatedShifts = data.shifts.map(shift =>
             shift.id === e.id ? { ...shift, start: e.start, end: e.end } : shift
         );
@@ -28,12 +34,52 @@ export default function DayShifts({ dayInfo, selectedDay }) {
         
     };
 
+    const handleEditShifts = async (startTime, endTime, shiftName) => {
+        const docRef = doc(db, "weekly-shifts", selectedDay);
+        const data = await (await getDoc(docRef)).data();
+
+        const start = startTime == '' ? selectedEvent.start : selectedEvent.start.slice(0, 11)  + startTime
+        const end = endTime == '' ? selectedEvent.end : selectedEvent.end.slice(0, 11) + endTime
+        const name = shiftName == 'No one' ? selectedEvent.title :  `${shiftName}'s shift`
+    
+        // this updates schedule-x
+        calendar.eventsService.update({
+            id: selectedEvent.id,
+            title: name,
+            start: start,
+            end: end, 
+        })
+
+        // this updates the firestore
+        const updatedShifts = data.shifts.map(shift =>
+            shift.id === selectedEvent.id ? { ...shift, start: start, end: end, title: name} : shift
+        );
+        await updateDoc(docRef, { shifts: updatedShifts });
+    }
+
+    const handleDoubleClick = (e) => {
+        setSelectedEvent(e)
+    }
+
+    const handleDelete = async (e) => {
+        // removes from schedule-x
+        calendar.eventsService.remove(selectedEvent.id)
+
+        // deletes from data base
+        const docRef = doc(db, "weekly-shifts", selectedDay);
+        const data = await (await getDoc(docRef)).data();
+        data.shifts = data.shifts.filter(shift => shift.id != selectedEvent.id)
+        await updateDoc(docRef, { shifts: data.shifts})
+        setSelectedEvent(null)
+    }
+
     const calendar = useCalendarApp({
         views: [ createViewDay() ],
         events: dayInfo.shifts,
         plugins: [
             createDragAndDropPlugin(),
             createResizePlugin(),
+            createEventsServicePlugin(),
         ],
         dayBoundaries: {
             start: startTime,
@@ -42,12 +88,43 @@ export default function DayShifts({ dayInfo, selectedDay }) {
         selectedDate: getDate(selectedDay),
         callbacks: {
             onEventUpdate: handleShiftChanges,
+            onDoubleClickEvent: handleDoubleClick,
         }
     });
 
     return (
-        <div className='day-shifts'>
-            <ScheduleXCalendar calendarApp={calendar} />
+        <div>
+            <div className='day-shifts'>
+                <ScheduleXCalendar calendarApp={calendar} />
+            </div>
+            {selectedEvent != null && 
+                <div className='edit-popup'>
+                    {edit ?
+                            <ShiftsPopup 
+                                closePopup={()=>{setSelectedEvent(null)}}
+                                updateCalendar={handleEditShifts}
+                            />
+                        :
+                            <Popup
+                                closePopup={()=> {setSelectedEvent(null)}}
+                                pageContent={
+                                    <div className='edit-choices'> 
+                                        <button 
+                                            className='delete-button'
+                                            onClick={handleDelete}
+                                        >Delete</button>
+                                        <button
+                                            onClick={()=> {
+                                                setEdit(true)
+                                            }}
+                                        >Edit</button>
+                                    </div>
+                                }
+                            />
+                    }
+                </div>
+                
+            }
         </div>
     );
 }

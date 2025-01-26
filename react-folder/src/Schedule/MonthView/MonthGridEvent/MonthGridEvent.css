@@ -4,10 +4,10 @@
     left: 0;
     right: 0;
     height: 100px;
-
+    background-color: var(--green-color);
     padding: 5px;
 }
 
 .empty-shifts {
-    background-color: var(--error-color);
+    background-color: var(--error-color) !important;
 }

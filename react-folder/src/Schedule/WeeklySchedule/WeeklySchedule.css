@@ -12,7 +12,6 @@
     border-radius: 10px;
     border: 1px solid var(--grey-outline);
     outline: none;
-
 }
 
 #day-selector:focus {
@@ -96,4 +95,25 @@
 .form-group {
     display: flex;
     flex-direction: column;
+}
+
+.edit-popup {
+    position:fixed;
+    top: -23vh;
+    left: -30vw;
+    z-index: 5;
+}
+
+.edit-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+.edit-choices > button {
+    width: 15em;
+    height: 3em;
+}
+
+.delete-button {
+    color: red;
 }
