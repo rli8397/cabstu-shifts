@@ -21,7 +21,7 @@ import { db } from '../../../firebase'
 // misc
 import { useEffect, useState } from 'react'
 
-export default function MonthCalendar() {
+export default function MonthCalendar({ user }) {
   const [popup, setPopup] = useState(null)
   const [data, setData] = useState(null)
 
@@ -36,7 +36,7 @@ export default function MonthCalendar() {
           if (popup == null) {
             setPopup(<Popup 
               closePopup={()=>{setPopup(null)}}
-              pageContent={<MonthShiftsEdit calendarEvent={calendarEvent}/>}
+              pageContent={<MonthShiftsEdit calendarEvent={calendarEvent} user={user}/>}
             />)
           }
 

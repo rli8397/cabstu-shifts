@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     height: 100px;
-    background-color: var(--green-color);
+    background-color: var(--sx-color-primary-container);
     padding: 5px;
 }
 

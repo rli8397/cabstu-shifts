@@ -1,0 +1,38 @@
+.shifts-grid {
+    display: grid;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.shifts-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 20px;
+    font-weight: bold;
+    background-color: var(--light-grey);
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    padding: 0px 10px;
+}
+
+.shifts-edit-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 20px;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+}
+
+.shifts-edit-row:last-child {
+    border-bottom: none;
+}
+
+.shifts-edit-row button {
+    padding: 5px;
+    width: 75%;
+    background-color: var(--error-color);
+}

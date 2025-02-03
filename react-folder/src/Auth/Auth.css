@@ -2,16 +2,39 @@
     height: 100vh;
     width: 100vw;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.auth-form {
+.auth-content {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 20em;
     gap: 1em;
-    margin-bottom: 1em;
+    padding: 4em;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
+    
+}
+
+.auth-form {    
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-bottom: 1.5em;
+}
+
+.auth-form button {
+    align-self: center;
+}
+.form-field {
+    display:flex; 
+    justify-content: space-between;
+    gap: 1.5em;
+}
+
+.auth-form > button,
+#toggle-signIn-createAcc{
+    width: 17em;
 }

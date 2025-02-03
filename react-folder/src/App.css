@@ -2,6 +2,7 @@
   --error-color: rgb(255, 196, 196);
   --grey-outline: rgba(128, 128, 128, 0.5);
   --green-color: rgb(167, 226, 167);
+  --light-grey: rgb(233,233,233);
 }
 #root {
   width: 100vw;
@@ -46,4 +47,12 @@ button {
 
 .sx__forward-backward-navigation {
   display:none;
+}
+
+.tester {
+  width: 200px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
 }

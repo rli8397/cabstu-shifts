@@ -86,10 +86,8 @@
     gap: 1em;
 }
 
-.form-group > input {
-    border: 2px solid var(--grey-outline);
-    padding: 7px 4px;
-    border-radius: 5px;
+.search-bar {
+    height: 50px;
 }
 
 .form-group {
@@ -117,3 +115,4 @@
 .delete-button {
     color: red;
 }
+

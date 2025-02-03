@@ -3,12 +3,13 @@ import { useState } from 'react'
 import Auth from './Auth/Auth'
 import './App.css'
 import WeeklySchedule from './Schedule/WeeklySchedule/WeeklySchedule'
-import TimePicker from './TimePicker/TimePicker'
+import SearchUser from './SearchUser/SearchUser'
 export default function App(){
-  const [user, setUser] = useState({displayName: 'user'})
+  const [user, setUser] = useState(null)
   const [choice, setChoice] = useState('Month')
+  
   const pages = {
-    Month: <MonthCalendar/>,
+    Month: <MonthCalendar user={user == null ? {} : {email: user.email, name: user.displayName}}/>,
     Week: <WeeklySchedule/>
   }
   return (
@@ -32,6 +33,7 @@ export default function App(){
       : 
         <Auth setUser={(user)=>{setUser(user)}}/>   
       }
+
     </div>
   )
 }

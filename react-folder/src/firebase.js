@@ -3,7 +3,6 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth"
 import { getFirestore } from 'firebase/firestore'
 import { getMessaging, getToken } from "firebase/messaging";
-
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -21,21 +20,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const messaging = getMessaging(app);
 
-// getToken(messaging, { vapidKey: 'BMnGN9BAOJqwJ5XJLlDWnmIfCqyhhoqbCnfHep-DGeQub689flYWzNka4tt2f8_SNK-PMfBdImEl7psP0JSv6Ys' }).then((currentToken) => {
-//   if (currentToken) {
-//     // Send the token to your server and update the UI if necessary
-//     // ...
-//   } else {
-//     // Show permission request UI
-//     console.log('No registration token available. Request permission to generate one.');
-//     // ...
-//   }
-// }).catch((err) => {
-//   console.log('An error occurred while retrieving token. ', err);
-//   // ...
-// });
-
 export const db = getFirestore(app);
-
 export const auth = getAuth(app);
 export default app;
+

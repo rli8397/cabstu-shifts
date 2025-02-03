@@ -22,7 +22,7 @@ export default function DayShifts({ dayInfo, selectedDay }) {
         endTime = '17:00';
     }
 
-    const handleShiftChanges = async (e) => {
+    const handleEventUpdates = async (e) => {
         const docRef = doc(db, "weekly-shifts", selectedDay);
         const data = await (await getDoc(docRef)).data();
 
@@ -34,13 +34,14 @@ export default function DayShifts({ dayInfo, selectedDay }) {
         
     };
 
-    const handleEditShifts = async (startTime, endTime, shiftName) => {
+    const handleEditShifts = async (startTime, endTime, shiftName, shiftEmail) => {
         const docRef = doc(db, "weekly-shifts", selectedDay);
         const data = await (await getDoc(docRef)).data();
 
         const start = startTime == '' ? selectedEvent.start : selectedEvent.start.slice(0, 11)  + startTime
         const end = endTime == '' ? selectedEvent.end : selectedEvent.end.slice(0, 11) + endTime
-        const name = shiftName == 'No one' ? selectedEvent.title :  `${shiftName}'s shift`
+        const name = shiftName == '' ? selectedEvent.title :  `${shiftName}'s shift`
+        const email = email == '' ? selectedEvent.email : email
     
         // this updates schedule-x
         calendar.eventsService.update({
@@ -52,7 +53,7 @@ export default function DayShifts({ dayInfo, selectedDay }) {
 
         // this updates the firestore
         const updatedShifts = data.shifts.map(shift =>
-            shift.id === selectedEvent.id ? { ...shift, start: start, end: end, title: name} : shift
+            shift.id === selectedEvent.id ? { ...shift, start: start, end: end, title: name, email: email,} : shift
         );
         await updateDoc(docRef, { shifts: updatedShifts });
     }
@@ -87,7 +88,7 @@ export default function DayShifts({ dayInfo, selectedDay }) {
         },
         selectedDate: getDate(selectedDay),
         callbacks: {
-            onEventUpdate: handleShiftChanges,
+            onEventUpdate: handleEventUpdates,
             onDoubleClickEvent: handleDoubleClick,
         }
     });
@@ -101,7 +102,10 @@ export default function DayShifts({ dayInfo, selectedDay }) {
                 <div className='edit-popup'>
                     {edit ?
                             <ShiftsPopup 
-                                closePopup={()=>{setSelectedEvent(null)}}
+                                closePopup={()=>{
+                                    setSelectedEvent(null)
+                                    setEdit(false)
+                                }}
                                 updateCalendar={handleEditShifts}
                             />
                         :
