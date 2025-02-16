@@ -11,7 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
-firebase.json
+react-folder/cabstu-shifts-firebase-adminsdk-sx47i-00c5bb5a20.json
+react-folder/firebase.js
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
